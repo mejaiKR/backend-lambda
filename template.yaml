@@ -1,0 +1,97 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform:
+  - AWS::LanguageExtensions
+  - AWS::Serverless-2016-10-31
+Description: >
+  mejai
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Handler: index.handler
+    Timeout: 3
+    Tracing: Active
+    # You can add LoggingConfig parameters such as the Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel. Learn more here https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html#sam-function-loggingconfig.
+    LoggingConfig:
+      LogFormat: JSON
+    Layers:
+      - !Ref NodeModulesLayer
+    VpcConfig:
+      SecurityGroupIds:
+        - sg-01d389bd3c91f12b2
+      SubnetIds:
+        - subnet-06ad595eff61005e8
+        - subnet-0e31a72ad5b4c0d9d
+        - subnet-00bc5fe166a5a24a5
+        - subnet-0be1054623d59b86d
+      Ipv6AllowedForDualStack: false
+    Environment:
+      Variables:
+        DB_HOST: mejai-rds.cp8wqaqsityc.ap-northeast-2.rds.amazonaws.com
+        DB_USER: mejai
+        DB_PASS: mejaiisgood
+        DB_NAME: postgres
+        DB_PORT: 5432
+
+  Api:
+    TracingEnabled: true
+
+Resources:
+  MejaiAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: MejaiAPI 
+      StageName: prod
+      DefinitionUri: ./mejai-swagger.yaml
+
+  NodeModulesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: node-modules
+      Description: Node modules
+      ContentUri: ./layers/modules
+      CompatibleRuntimes:
+        - nodejs20.x
+
+  GetRanking:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: get-ranking
+      CodeUri: ./functions/get-ranking/
+      Role: arn:aws:iam::381492098377:role/lambda-with-rds
+      Events:
+        GetRanking:
+          Type: Api
+          Properties:
+            Path: /api/v2/ranking
+            Method: get
+            RestApiId: !Ref MejaiAPI
+
+  GetUsersProfile:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: get-users-profile-rds
+      CodeUri: ./functions/get-users-profile-rds/
+      Role: arn:aws:iam::381492098377:role/lambda-with-rds
+      Events:
+        GetUsersProfile:
+          Type: Api
+          Properties:
+            Path: /api/v2/users/profile
+            Method: get
+            RestApiId: !Ref MejaiAPI
+
+  GetUsersStreak:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: get-users-streak
+      CodeUri: ./functions/get-users-streak/
+      Role: arn:aws:iam::381492098377:role/lambda-with-rds
+      Events:
+        GetUsersStreak:
+          Type: Api
+          Properties:
+            Path: /api/v2/users/streak
+            Method: get
+            RestApiId: !Ref MejaiAPI

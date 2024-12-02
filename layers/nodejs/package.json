@@ -1,0 +1,22 @@
+{
+  "name": "backend-lambda",
+  "version": "1.0.0",
+  "description": "",
+  "main": "none",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "backend-lambda"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.4",
+    "pg": "^8.12.0"
+  }
+}

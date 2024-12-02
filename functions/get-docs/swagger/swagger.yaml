@@ -1,0 +1,372 @@
+swagger: "2.0"
+info:
+  description: "환영합니다! [Mejai.gg](https://example.com)는 League of Legends의 게임 데이터를\
+    \ 분석하여 사용자에게 통계를 제공하는 서비스입니다. 이 API 문서는 Mejai.gg의 API를 사용하는 방법을 설명합니다.\n#### 지\
+    원 및 문의 - API 사용 중에 문제가 발생하거나 추가적인 지원이 필요한 경우, 지원 페이지에서 도움을 받을 수 있습니다. - 새로운 기능\
+    \ 제안이나 버그 리포트는 리포지토리를 통해 제출해 주세요.\n#### API 작성에 참고한 문서: - [Google API design guide](https://cloud.google.com/apis/design)\n"
+  version: "0.0.1"
+  title: "MejaiAPI"
+  contact:
+    email: "wnddms12345@gmail.com"
+host: "ug9bgowsd1.execute-api.ap-northeast-2.amazonaws.com"
+basePath: "/mejai-v2"
+schemes:
+- "https"
+paths:
+  /api/v2/ranking:
+    get:
+      tags:
+      - "Ranking"
+      summary: "특정 월의 랭킹 조회"
+      description: "주어진 연도와 월을 기준으로 랭킹을 조회합니다.\n"
+      operationId: "getMonthlyRanking"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "year"
+        in: "query"
+        description: "조회 시작 연도"
+        required: true
+        type: "string"
+      - name: "month"
+        in: "query"
+        description: "조회 시작 월"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "랭킹 조회 성공"
+          schema:
+            $ref: "#/definitions/MonthlyRanking"
+        "400":
+          description: "기타 오류"
+        "404":
+          description: "해당 랭킹 정보 찾을 수 없음"
+  /api/v2/renewal-status/profile:
+    get:
+      tags:
+      - "Users"
+      summary: "프로필 업데이트 상태 조회"
+      description: "프로필 업데이트 요청의 상태를 조회합니다.   서버에서 갱신이 완료되면 true를 반환합니다.\n"
+      operationId: "getRenewalStatusProfile"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "tag"
+        in: "query"
+        description: "소환사 태그"
+        required: false
+        type: "string"
+      - name: "id"
+        in: "query"
+        description: "소환사 아이디"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "프로필 업데이트 상태 조회 성공"
+          schema:
+            $ref: "#/definitions/RenewalStatus"
+        "400":
+          description: "기타 오류"
+        "404":
+          description: "해당 소환사 정보 찾을 수 없음"
+  /api/v2/renewal-status/streak:
+    get:
+      tags:
+      - "Users"
+      summary: "스트릭 업데이트 상태 조회"
+      description: "스트릭 업데이트 요청의 상태를 조회합니다.   서버에서 갱신이 완료되면 true를 반환합니다.\n"
+      operationId: "getRenewalStatusStreak"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "year"
+        in: "query"
+        description: "조회 시작 연도"
+        required: true
+        type: "string"
+      - name: "tag"
+        in: "query"
+        description: "소환사 태그"
+        required: false
+        type: "string"
+      - name: "month"
+        in: "query"
+        description: "조회 시작 월"
+        required: true
+        type: "string"
+      - name: "id"
+        in: "query"
+        description: "소환사 아이디"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "스트릭 업데이트 상태 조회 성공"
+          schema:
+            $ref: "#/definitions/RenewalStatus"
+        "400":
+          description: "기타 오류"
+        "404":
+          description: "해당 소환사 정보 찾을 수 없음"
+  /api/v2/users/profile:
+    get:
+      tags:
+      - "Users"
+      summary: "소환사 정보 조회 (v2)"
+      description: "주어진 소환사 ID와 태그를 사용하여 소환사의 프로필 정보를 조회합니다.\n"
+      operationId: "getUsersProfileV2"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "tag"
+        in: "query"
+        description: "소환사 태그"
+        required: false
+        type: "string"
+      - name: "id"
+        in: "query"
+        description: "소환사 아이디"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "소환사 정보 조회 성공"
+          schema:
+            $ref: "#/definitions/UserProfile"
+        "400":
+          description: "기타 오류"
+        "500":
+          description: "서버 내부 오류"
+        "404":
+          description: "해당 소환사가 라이엇에 등록되어 있지 않음"
+        "429":
+          description: "라이엇 API 요청 제한 초과"
+  /api/v2/users/profile/rds:
+    get:
+      produces:
+      - "application/json"
+      parameters:
+      - name: "tag"
+        in: "query"
+        description: "소환사 태그"
+        required: false
+        type: "string"
+      - name: "id"
+        in: "query"
+        description: "소환사 아이디"
+        required: true
+        type: "string"
+      responses: {}
+    post:
+      produces:
+      - "application/json"
+      responses: {}
+  /api/v2/users/renewal/profile:
+    post:
+      tags:
+      - "Users"
+      summary: "유저 프로필 업데이트 요청"
+      description: "유저의 프로필 정보 업데이트 요청을 보냅니다. (SQS로 전송)"
+      operationId: "updateUserProfile"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "UserIdentifier"
+        required: true
+        schema:
+          $ref: "#/definitions/UserIdentifier"
+      responses:
+        "200":
+          description: "200 response"
+        "400":
+          description: "보낸 형식이 잘못됨."
+        "202":
+          description: "프로필 업데이트 요청 성공"
+        "500":
+          description: "서버 내부 오류(aws sqs 전송 실패)"
+  /api/v2/users/renewal/streak:
+    post:
+      tags:
+      - "Users"
+      summary: "유저 스트릭 업데이트 요청"
+      description: "유저의 스트릭 정보 업데이트 요청을 보냅니다. (SQS로 전송)"
+      operationId: "updateUserStreak"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "UserStreakUpdate"
+        required: true
+        schema:
+          $ref: "#/definitions/UserStreakUpdate"
+      responses:
+        "200":
+          description: "200 response"
+        "400":
+          description: "기타 오류"
+        "202":
+          description: "스트릭 업데이트 성공"
+        "500":
+          description: "서버 내부 오류(aws sqs 전송 실패)"
+  /api/v2/users/streak:
+    get:
+      tags:
+      - "Users"
+      summary: "소환사 게임 스트릭 조회 (v2)"
+      description: "주어진 소환사 ID, 태그, 조회 시작 날짜, 조회 종료 날짜를 사용하여 소환사가 특정 기간 동안 진행한 게임의\
+        \ 총 횟수를 조회합니다.\n"
+      operationId: "getUserGameCountsV2"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "year"
+        in: "query"
+        description: "조회 시작 연도"
+        required: true
+        type: "string"
+      - name: "tag"
+        in: "query"
+        description: "소환사 태그"
+        required: false
+        type: "string"
+      - name: "month"
+        in: "query"
+        description: "조회 시작 월"
+        required: true
+        type: "string"
+      - name: "id"
+        in: "query"
+        description: "소환사 아이디"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "소환사 게임 스트릭 조회 성공"
+          schema:
+            $ref: "#/definitions/ArrayOfUserGameCount"
+        "400":
+          description: "기타 오류"
+        "404":
+          description: "해당 소환사 정보 찾을 수 없음"
+  /sqs-test:
+    post:
+      produces:
+      - "application/json"
+      responses: {}
+definitions:
+  UserProfile:
+    type: "object"
+    properties:
+      userName:
+        type: "string"
+        description: "소환사 이름"
+      tagLine:
+        type: "string"
+        description: "소환사 태그라인"
+      profileIcon:
+        type: "string"
+        format: "uri"
+        description: "소환사 프로필 이미지 URL"
+      tierIcon:
+        type: "string"
+        format: "uri"
+        description: "소환사 티어 아이콘 이미지 URL"
+      tier:
+        type: "string"
+        description: "소환사 티어"
+      rank:
+        type: "string"
+        description: "소환사 랭크"
+      leaguePoints:
+        type: "number"
+        description: "소환사 리그 포인트"
+      level:
+        type: "number"
+        description: "소환사 레벨"
+      last_updated_at:
+        type: "string"
+        format: "date-time"
+        description: "마지막 업데이트 시간"
+  RenewalStatus:
+    type: "object"
+    properties:
+      finished:
+        type: "boolean"
+        description: "업데이트 완료 여부"
+      last_updated_at:
+        type: "string"
+        format: "date-time"
+        description: "마지막 업데이트 시간"
+  MonthlyRanking:
+    type: "object"
+    properties:
+      year:
+        type: "integer"
+        format: "int32"
+      month:
+        type: "integer"
+        format: "int32"
+      topRanking:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            summonerName:
+              type: "string"
+            tagLine:
+              type: "string"
+            totalGameCount:
+              type: "integer"
+              format: "int32"
+  UserStreakUpdate:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      tag:
+        type: "string"
+      year:
+        type: "integer"
+        format: "int32"
+      month:
+        type: "integer"
+        format: "int32"
+  UserIdentifier:
+    type: "object"
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+      tag:
+        type: "string"
+  ArrayOfUserGameCount:
+    type: "array"
+    items:
+      $ref: "#/definitions/UserGameCount"
+  UserGameCount:
+    type: "object"
+    properties:
+      date:
+        type: "string"
+        format: "date"
+        description: "게임한 날짜"
+      gameCount:
+        type: "number"
+        description: "해당 날짜에 진행된 총 게임 횟수"
+      imageUrl:
+        type: "string"
+        format: "uri"
+        description: "해당 날짜에 진행된 판수에 맞는 메자이 이미지"
+externalDocs:
+  description: "Find out more about Mejai GG"
+  url: "http://example.com"
